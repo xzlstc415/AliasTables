@@ -2,6 +2,7 @@
 
 require 'alias.rb'
 
+nvars = ARGV.size > 0 ? ARGV.shift.to_i : 10
 x = []
 probs = []
 STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
@@ -11,4 +12,4 @@ while line=STDIN.gets do
   probs << inputs[1].to_f
 end
 at = AliasTable.new(x, probs)
-10000.times {print at.generate, "\n"}
+nvars.times {print at.generate, "\n"}
