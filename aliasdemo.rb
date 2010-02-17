@@ -11,4 +11,4 @@ while line=STDIN.gets do
   probs << inputs[1].to_f
 end
 at = AliasTable.new(x, probs)
-10000.times {print at.generate.to_s}
+10000.times {print at.generate, "\n"}
