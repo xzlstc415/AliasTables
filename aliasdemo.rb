@@ -2,7 +2,13 @@
 
 require 'alias.rb'
 
-x = [1, 3, 7, 42]
-probs = [0.1, 0.2, 0.3, 0.4]
+x = []
+probs = []
+STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
+while line=STDIN.gets do
+  inputs = line.strip.split(/[\s,;:]+/)
+  x << inputs[0].to_f
+  probs << inputs[1].to_f
+end
 at = AliasTable.new(x, probs)
-10000.times {puts at.generate.to_s}
+10000.times {print at.generate.to_s}
