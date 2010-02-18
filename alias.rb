@@ -19,6 +19,7 @@ class AliasTable
     if p_value.sum.not_close_enough(1.0)
       raise "p_values must sum to 1.0"
     end
+    p_value.each {|p| raise "p_values must be positive" if p <= 0.0}
     @value = value
     @p_value = p_value.clone
     @alias = Array.new(value.length)
