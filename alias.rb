@@ -50,7 +50,7 @@ class AliasTable
   end
   
   def generate
-    column = @value.length * rand
+    column = rand(@value.length)
     rand < @p_primary[column] ? @value[column] : @alias[column]
   end
   
