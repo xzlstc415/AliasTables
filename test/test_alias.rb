@@ -1,15 +1,23 @@
 #!/usr/bin/env ruby -w
 
-require './alias'
+require './lib/alias.rb'
 
-nvars = ARGV.size > 0 ? ARGV.shift.to_i : 10
+nvars = 10
 x = []
 probs = []
-STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
-while line=STDIN.gets do
-  inputs = line.strip.split(/[\s,;:]+/)
-  x << inputs[0].to_f
-  probs << inputs[1].to_f
+# STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
+Dir["test/infile.*"].each do |f_name|
+  f = File.open(f_name, "r")
+  while line = f.gets do
+    inputs = line.strip.split(/[\s,;:]+/).map{|x| x.to_f}
+    x << inputs[0]
+    probs << inputs[1]
+  end
+  begin
+    at = AliasTable.new(x, probs)
+    nvars.times {print at.generate, "\n"}
+    f.close
+  rescue Exception => e
+    puts e.message
+  end
 end
-at = AliasTable.new(x, probs)
-nvars.times {print at.generate, "\n"}
