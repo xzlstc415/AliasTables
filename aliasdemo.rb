@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby -w
 
-require 'alias.rb'
+require './alias'
 
 nvars = ARGV.size > 0 ? ARGV.shift.to_i : 10
 x = []
