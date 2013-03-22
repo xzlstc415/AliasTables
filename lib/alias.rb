@@ -1,3 +1,7 @@
+#!/usr/bin/env ruby -w
+
+require 'skewheap'
+
 class AliasTable
   
   def initialize(values, p_values)
@@ -13,12 +17,11 @@ class AliasTable
     @alias = Array.new(values.length)
     @p_primary = Array.new(values.length, 1.0)
     @equiprob = 1.0 / values.length
-    @deficit_set = []
+    @deficit_set = SkewHeap.new
     @surplus_set = []
     @values.each_index {|i| classify(i) }
-    while @deficit_set.length > 0 do
-      @deficit_set.sort! {|i, j| @p_values[i] < @p_values[j] ? -1 : 1 }
-      deficit_column = @deficit_set.shift
+    until @deficit_set.empty? do
+      deficit_column = @deficit_set.pop
       surplus_column = @surplus_set.shift
       @p_primary[deficit_column] = @p_values[deficit_column] / @equiprob
       @alias[deficit_column] = @values[surplus_column]
@@ -36,7 +39,7 @@ class AliasTable
   def classify(i)
     if @p_values[i].not_close_enough(@equiprob)
       if @p_values[i] < @equiprob
-        @deficit_set << i
+        @deficit_set.push i
       else
         @surplus_set << i
       end
