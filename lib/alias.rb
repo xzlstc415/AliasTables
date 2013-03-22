@@ -5,9 +5,9 @@ class AliasTable
       raise "Args to AliasTable must be vectors of the same length."
     end  
     if p_values.reduce(:+).not_close_enough(1.0)
-      raise "p_valuess must sum to 1.0"
+      raise "p_values must sum to 1.0"
     end
-    p_values.each {|p| raise "p_valuess must be positive" if p <= 0.0}
+    p_values.each {|p| raise "p_values must be positive" if p <= 0.0}
     @values = values
     @p_values = p_values.clone
     @alias = Array.new(values.length)
