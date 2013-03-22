@@ -1,12 +1,6 @@
 class Numeric
   def not_close_enough(n)
-    (self - n).abs > 1E-10
-  end
-end
-
-class Array
-  def sum
-    self.inject {|x, tot| tot += x}
+    (self - n).abs > 1E-12
   end
 end
 
@@ -16,7 +10,7 @@ class AliasTable
     if value.length != p_value.length
       raise "Args to AliasTable must be vectors of the same length."
     end  
-    if p_value.sum.not_close_enough(1.0)
+    if p_value.reduce(:+).not_close_enough(1.0)
       raise "p_values must sum to 1.0"
     end
     p_value.each {|p| raise "p_values must be positive" if p <= 0.0}
@@ -39,6 +33,7 @@ class AliasTable
     end
   end
   
+  private 
   def classify(i)
     if @p_value[i].not_close_enough(@equiprob)
       if @p_value[i] < @equiprob
@@ -49,6 +44,7 @@ class AliasTable
     end
   end
   
+  public
   def generate
     column = rand(@value.length)
     rand < @p_primary[column] ? @value[column] : @alias[column]
