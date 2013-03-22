@@ -3,10 +3,10 @@
 require './lib/alias.rb'
 
 nvars = 10
-x = []
-probs = []
 # STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
 Dir["test/infile.*"].each do |f_name|
+  x = []
+  probs = []
   f = File.open(f_name, "r")
   while line = f.gets do
     inputs = line.strip.split(/[\s,;:]+/).map{|x| x.to_f}
