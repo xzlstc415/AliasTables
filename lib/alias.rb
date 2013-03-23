@@ -50,6 +50,6 @@ end
 
 class Numeric
   def not_close_enough(n)
-    (self - n).abs > 1E-12
+    ((self - n) / self).abs > 1E-15
   end
 end
