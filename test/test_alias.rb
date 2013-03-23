@@ -3,7 +3,12 @@
 require './lib/alias.rb'
 
 nvars = 10
-# STDERR.puts "Enter pairs of x, p(x) (one pair per line)"
+begin
+  at = AliasTable.new(["yes", "no"], [0.3, 0.3, 0.4])
+  nvars.times {print at.generate, "\n"}
+rescue Exception => e
+  puts e.message
+end
 Dir["test/infile.*"].each do |f_name|
   x = []
   probs = []
@@ -13,10 +18,10 @@ Dir["test/infile.*"].each do |f_name|
     x << inputs[0]
     probs << inputs[1]
   end
+  f.close
   begin
     at = AliasTable.new(x, probs)
     nvars.times {print at.generate, "\n"}
-    f.close
   rescue Exception => e
     puts e.message
   end
