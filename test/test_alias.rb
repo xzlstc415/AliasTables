@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby -w
 
-require './lib/alias.rb'
+require 'alias'
 
 nvars = 1000000
 begin
