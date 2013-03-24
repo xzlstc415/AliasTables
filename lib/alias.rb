@@ -17,7 +17,17 @@ class AliasTable
   # i.e., they must be arrays of the same length.  Values can be
   # anything, but the probabilities must be positive numbers that
   # sum to one.
-  # 
+  #
+  # *Arguments*::
+  #   - +values+ -> the set of values to generate from.
+  #   - +p_values+ -> the synchronized set of probabilities associated
+  #     with the values set.
+  # *Raises*::
+  #   - RuntimeError if +values+ and +p_values+ are different lengths.
+  #   - RuntimeError if any +p_values+ are negative.
+  #   - RuntimeError if +p_values+ don't sum to one.
+  #
+
   def initialize(values, p_values)
     if values.length != p_values.length
       raise "Args to AliasTable must be vectors of the same length."
@@ -26,8 +36,8 @@ class AliasTable
     if p_values.reduce(:+).not_close_enough(1.0)
       raise "p_values must sum to 1.0"
     end
-    @values = values.clone
-    @p_values = p_values.clone
+    @values = values.clone.freeze
+    @p_values = p_values
     @alias = Array.new(values.length)
     @p_primary = Array.new(values.length, 1.0)
     @equiprob = 1.0 / values.length
@@ -44,9 +54,9 @@ class AliasTable
     end
   end
 
-  # Generate a random outcome.  This process requires constant time,
-  # but is not an inversion since two uniforms are used for each value
-  # that gets generated.
+  # Returns a random outcome from the distribution provided to the constructor.
+  # This process requires constant time, but is not an inversion
+  # since two uniforms are used for each value that gets generated.
   # 
   def generate
     column = rand(@values.length)
