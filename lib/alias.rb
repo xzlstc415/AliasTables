@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby -w
 
-require 'skewheap'
-
 # Generate values from a categorical distribution in constant
 # time, regardless of the number of categories.  This clever algorithm
 # uses conditional probability to construct a table comprised of columns
@@ -41,12 +39,12 @@ class AliasTable
     @alias = Array.new(values.length)
     @p_primary = Array.new(values.length, 1.0)
     @equiprob = 1.0 / values.length
-    @deficit_set = SkewHeap.new
+    @deficit_set = []
     @surplus_set = []
     @values.each_index {|i| classify(i) }
     until @deficit_set.empty? do
       deficit_column = @deficit_set.pop
-      surplus_column = @surplus_set.shift
+      surplus_column = @surplus_set.pop
       @p_primary[deficit_column] = @p_values[deficit_column] / @equiprob
       @alias[deficit_column] = @values[surplus_column]
       @p_values[surplus_column] -= @equiprob - @p_values[deficit_column]
@@ -67,7 +65,7 @@ class AliasTable
   def classify(i)
     if @p_values[i].not_close_enough(@equiprob)
       if @p_values[i] < @equiprob
-        @deficit_set.push i
+        @deficit_set << i
       else
         @surplus_set << i
       end
