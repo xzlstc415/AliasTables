@@ -40,25 +40,17 @@ class AliasTable
     surplus_set = []
     @x.each_index do |i|
       unless p_value[i].close_enough(equiprob)
-        if p_value[i] < equiprob
-          deficit_set << i
-        else
-          surplus_set << i
-        end
+        (p_value[i] < equiprob ? deficit_set : surplus_set) << i
       end
     end
     until deficit_set.empty? do
-      deficit_column = deficit_set.pop
-      surplus_column = surplus_set.pop
-      @p_primary[deficit_column] = p_value[deficit_column] / equiprob
-      @alias[deficit_column] = @x[surplus_column]
-      p_value[surplus_column] -= equiprob - p_value[deficit_column]
-      unless p_value[surplus_column].close_enough(equiprob)
-        if p_value[surplus_column] < equiprob
-          deficit_set << surplus_column
-        else
-          surplus_set << surplus_column
-        end
+      deficit = deficit_set.pop
+      surplus = surplus_set.pop
+      @p_primary[deficit] = p_value[deficit] / equiprob
+      @alias[deficit] = @x[surplus]
+      p_value[surplus] -= equiprob - p_value[deficit]
+      unless p_value[surplus].close_enough(equiprob)
+        (p_value[surplus] < equiprob ? deficit_set : surplus_set) << surplus
       end
     end
   end
