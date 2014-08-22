@@ -9,7 +9,6 @@
 # probabilities.
 #
 class AliasTable
-
   # Construct an alias table from a set of values and their associated
   # probabilities.  Values and their probabilities must be synchronized,
   # i.e., they must be arrays of the same length.  Values can be
@@ -17,67 +16,69 @@ class AliasTable
   # sum to one.
   #
   # *Arguments*::
-  #   - +values+ -> the set of values to generate from.
-  #   - +p_values+ -> the synchronized set of probabilities associated
-  #     with the values set.
+  #   - +x_set+ -> the set of values to generate from.
+  #   - +p_value+ -> the synchronized set of probabilities associated
+  #     with the value set.
   # *Raises*::
-  #   - RuntimeError if +values+ and +p_values+ are different lengths.
-  #   - RuntimeError if any +p_values+ are negative.
-  #   - RuntimeError if +p_values+ don't sum to one.
+  #   - RuntimeError if +x_set+ and +p_value+s are different lengths.
+  #   - RuntimeError if any +p_value+ are negative.
+  #   - RuntimeError if +p_value+ don't sum to one.
   #
-
-  def initialize(values, p_values)
-    if values.length != p_values.length
+  def initialize(x_values, p_value)
+    if x_values.length != p_value.length
       raise "Args to AliasTable must be vectors of the same length."
     end  
-    p_values.each {|p| raise "p_values must be positive" if p <= 0.0}
-    if p_values.reduce(:+).not_close_enough(1.0)
+    p_value.each {|p| raise "p_values must be positive" if p <= 0.0}
+    unless p_value.reduce(:+).close_enough(1.0)
       raise "p_values must sum to 1.0"
     end
-    @values = values.clone.freeze
-    @p_values = p_values
-    @alias = Array.new(values.length)
-    @p_primary = Array.new(values.length, 1.0)
-    @equiprob = 1.0 / values.length
-    @deficit_set = []
-    @surplus_set = []
-    @values.each_index {|i| classify(i) }
-    until @deficit_set.empty? do
-      deficit_column = @deficit_set.pop
-      surplus_column = @surplus_set.pop
-      @p_primary[deficit_column] = @p_values[deficit_column] / @equiprob
-      @alias[deficit_column] = @values[surplus_column]
-      @p_values[surplus_column] -= @equiprob - @p_values[deficit_column]
-      classify(surplus_column)
+    @x = x_values.clone.freeze
+    @alias = Array.new(@x.length)
+    @p_primary = Array.new(@x.length, 1.0)
+    equiprob = 1.0 / @x.length
+    deficit_set = []
+    surplus_set = []
+    @x.each_index do |i|
+      unless p_value[i].close_enough(equiprob)
+        if p_value[i] < equiprob
+          deficit_set << i
+        else
+          surplus_set << i
+        end
+      end
     end
-  end
-
-  # Returns a random outcome from the distribution provided to the constructor.
-  # This process requires constant time, but is not an inversion
-  # since two uniforms are used for each value that gets generated.
-  # 
-  def generate
-    column = rand(@values.length)
-    rand < @p_primary[column] ? @values[column] : @alias[column]
-  end
-  
-  private 
-  def classify(i)
-    if @p_values[i].not_close_enough(@equiprob)
-      if @p_values[i] < @equiprob
-        @deficit_set << i
-      else
-        @surplus_set << i
+    until deficit_set.empty? do
+      deficit_column = deficit_set.pop
+      surplus_column = surplus_set.pop
+      @p_primary[deficit_column] = p_value[deficit_column] / equiprob
+      @alias[deficit_column] = @x[surplus_column]
+      p_value[surplus_column] -= equiprob - p_value[deficit_column]
+      unless p_value[surplus_column].close_enough(equiprob)
+        if p_value[surplus_column] < equiprob
+          deficit_set << surplus_column
+        else
+          surplus_set << surplus_column
+        end
       end
     end
   end
 
+  # Returns a random outcome from this object's distribution.
+  # The generate method is O(1) time, but is not an inversion
+  # since two uniforms are used for each value that gets generated.
+  # 
+  def generate
+    column = rand(@x.length)
+    rand <= @p_primary[column] ? @x[column] : @alias[column]
+  end
+  
 end
 
+
 class Numeric
-  # Expand class Numeric to detect whether two values are within a
+  # Expand class Numeric to detect whether two x_set are within a
   # tolerance of 10^-15 of each other.
-  def not_close_enough(n)
-    ((self - n) / self).abs > 1E-15
+  def close_enough(n)
+    ((self - n).to_f / self).abs < 1E-15
   end
 end
