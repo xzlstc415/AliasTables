@@ -2,7 +2,7 @@
 
 require 'alias'
 
-nvars = 1000000
+nvars = 1_000_000
 begin
   at = AliasTable.new(["yes", "no"], [0.3, 0.3, 0.4])
   nvars.times {print at.generate, "\n"}
