@@ -1,10 +1,10 @@
 # -*- ruby -*-
-_VERSION = "1.0.0"
+_VERSION = "2.0.0"
 
 Gem::Specification.new do |s|
   s.name = "aliastable"
   s.version = _VERSION
-  s.date = "2013-03-23"
+  s.date = "2014-08-22"
   s.summary = "Efficiently generate random outcomes from an arbitrary categorical distribution."
   s.email = "pjs@alum.mit.edu"
   s.description = "If a categorical distribution has k distinct values, traditional approaches will require O(k) work to pick an outcome with the correct probabilities.  This algorithm uses conditional probability to construct a table which will yield outcomes with the correct probabilities, but in O(1) time."
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
     test/infile.good.2
     test/test_alias.rb
   ]
-  s.add_runtime_dependency 'skewheap', '~> 1.0'
-  s.required_ruby_version = '>= 1.8.1'
+  s.required_ruby_version = '>= 1.9.3'
   s.license = 'LGPL'
 end
