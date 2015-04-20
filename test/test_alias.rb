@@ -20,7 +20,7 @@ Dir["test/infile.*"].each do |f_name|
     inputs = line.strip.split(/[\s,;:]+/)
     x << inputs[0]
     counts[inputs[0]] = 0
-    probs << inputs[1].to_f
+    probs << inputs[1].to_r
     n_hat = probs[-1] * nvars
     half_width = 2.5 * Math::sqrt(n_hat * (1.0 - probs[-1])) if n_hat > 0
     # expected_counts[inputs[0]] = "%d +/- %d" % [n_hat, half_width]
