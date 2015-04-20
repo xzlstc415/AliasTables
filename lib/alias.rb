@@ -9,7 +9,6 @@
 # probabilities.
 #
 class AliasTable
-  TOLERANCE = Rational(1,1E15)
   # Construct an alias table from a set of values and their associated
   # probabilities.  Values and their probabilities must be synchronized,
   # i.e., they must be arrays of the same length.  Values can be
@@ -19,11 +18,12 @@ class AliasTable
   # *Arguments*::
   #   - +x_set+ -> the set of values to generate from.
   #   - +p_value+ -> the synchronized set of probabilities associated
-  #     with the value set.
+  #     with the value set. These values should be Rationals to avoid
+  #     rounding errors.
   # *Raises*::
   #   - RuntimeError if +x_set+ and +p_value+s are different lengths.
   #   - RuntimeError if any +p_value+ are negative.
-  #   - RuntimeError if +p_value+ don't sum to one.
+  #   - RuntimeError if +p_value+ don't sum to one. Use Rationals to avoid this.
   #
   def initialize(x_values, p_values)
     if x_values.length != p_values.length
@@ -34,7 +34,7 @@ class AliasTable
       raise "p_values must be positive" if tmp <= 0.0
       tmp
     end
-    unless (p_val.reduce(:+) - Rational(1)).abs < TOLERANCE
+    unless p_val.reduce(:+) == Rational(1)
       raise "p_values must sum to 1.0"
     end
     @x = x_values.clone.freeze
@@ -44,7 +44,7 @@ class AliasTable
     deficit_set = []
     surplus_set = []
     @x.each_index do |i|
-      unless (p_val[i] - equiprob).abs < TOLERANCE
+      unless p_val[i] == equiprob
         (p_val[i] < equiprob ? deficit_set : surplus_set) << i
       end
     end
@@ -54,7 +54,7 @@ class AliasTable
       @p_primary[deficit] = p_val[deficit] / equiprob
       @alias[deficit] = @x[surplus]
       p_val[surplus] -= equiprob - p_val[deficit]
-      unless (p_val[surplus] - equiprob).abs < TOLERANCE
+      unless p_val[surplus] == equiprob
         (p_val[surplus] < equiprob ? deficit_set : surplus_set) << surplus
       end
     end
