@@ -29,11 +29,12 @@ class AliasTable
     if x_values.length != p_values.length
       raise "Args to AliasTable must be vectors of the same length."
     end
-    p = p_values.map do |current_p|
-      raise "p_values must be positive" if current_p <= 0.0
-      Rational(current_p)
+    p_val = p_values.map do |current_p|
+      tmp = current_p.to_r
+      raise "p_values must be positive" if tmp <= 0.0
+      tmp
     end
-    unless (p.reduce(:+) - Rational(1)).abs < TOLERANCE
+    unless (p_val.reduce(:+) - Rational(1)).abs < TOLERANCE
       raise "p_values must sum to 1.0"
     end
     @x = x_values.clone.freeze
@@ -43,18 +44,18 @@ class AliasTable
     deficit_set = []
     surplus_set = []
     @x.each_index do |i|
-      unless (p[i] - equiprob).abs < TOLERANCE
-        (p[i] < equiprob ? deficit_set : surplus_set) << i
+      unless (p_val[i] - equiprob).abs < TOLERANCE
+        (p_val[i] < equiprob ? deficit_set : surplus_set) << i
       end
     end
     until deficit_set.empty? do
       deficit = deficit_set.pop
       surplus = surplus_set.pop
-      @p_primary[deficit] = p[deficit] / equiprob
+      @p_primary[deficit] = p_val[deficit] / equiprob
       @alias[deficit] = @x[surplus]
-      p[surplus] -= equiprob - p[deficit]
-      unless (p[surplus] - equiprob).abs < TOLERANCE
-        (p[surplus] < equiprob ? deficit_set : surplus_set) << surplus
+      p_val[surplus] -= equiprob - p_val[deficit]
+      unless (p_val[surplus] - equiprob).abs < TOLERANCE
+        (p_val[surplus] < equiprob ? deficit_set : surplus_set) << surplus
       end
     end
   end
