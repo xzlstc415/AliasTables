@@ -1,5 +1,5 @@
 # -*- ruby -*-
-_VERSION = "3.0.0"
+_VERSION = "3.0.1"
 
 Gem::Specification.new do |s|
   s.name = "aliastable"
@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
   s.author = "Paul J Sanchez"
   s.files = %w[
     aliastable.gemspec
-    lgpl.txt
     lib/alias.rb
     Rakefile
     test/infile.bad.1
