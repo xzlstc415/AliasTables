@@ -38,7 +38,7 @@ class AliasTable
     end
     @x = x_values.clone.freeze
     @alias = Array.new(@x.length)
-    @p_primary = Array.new(@x.length, 1.0)
+    @p_primary = Array.new(@x.length).map{Rational(1)}
     equiprob = Rational(1, @x.length)
     deficit_set = []
     surplus_set = []
